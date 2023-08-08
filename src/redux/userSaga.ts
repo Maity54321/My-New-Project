@@ -23,18 +23,20 @@ import {
   updateUserSuccess,
 } from "./userActions";
 
-const fetchUsersAPI = (): any => {
+const fetchUsersAPI = (data: any): any => {
+  console.log(data);
+
   return new Promise((resolve, reject) => {
-    Axios.get("http://localhost:4000/api").then((response) =>
-      resolve(response)
-    );
+    Axios.get(
+      `http://localhost:4000/api?page=${data.page}&limit=${data.limit}`
+    ).then((response) => resolve(response));
   });
 };
 
 const createUserAPI = (data: any) => {
   return new Promise((resolve, reject) => {
     Axios.post(`http://localhost:4000/api`, data).then((response) =>
-      resolve({response, data})
+      resolve({ response, data })
     );
   });
 };
@@ -103,9 +105,9 @@ function* createUser(action: any): any {
 
 function* fetchDataSaga(action: any): any {
   try {
-    const response = yield call(fetchUsersAPI);
-    // console.log(response.data.message);
-    yield put(fetchDataSuccess(response.data.message));
+    const response: any = yield call(fetchUsersAPI, action.payload);
+    console.log(response);
+    yield put(fetchDataSuccess(response.data.data));
   } catch (error) {
     yield put(fetchDataFail(error));
   }

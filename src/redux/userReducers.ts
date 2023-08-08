@@ -37,8 +37,8 @@ export const userReducer = (state = initialState, action: any) => {
       console.log("new Object:", obj);
 
       console.log("state:", state);
-      const rowsPerPage = 5;
-      const datas = state.data;
+      const rowsPerPage = 10;
+      const datas: any = state.data;
       const currentPage = 3;
       const startIndex = (currentPage - 1) * rowsPerPage;
       const endIndex = startIndex + rowsPerPage;
@@ -50,10 +50,13 @@ export const userReducer = (state = initialState, action: any) => {
       currentPageData[0] = obj;
       console.log("testUltimate", currentPageData);
 
+      const latestData = [...datas, obj];
+      console.log("latest:", latestData);
+
       return {
         ...state,
         loading: false,
-        data: currentPageData,
+        data: latestData,
         status: action.payload.response.status,
       };
     case CREATE_USERS_FAIL:

@@ -16,8 +16,9 @@ import {
   UPDATE_USERS_SUCCESS,
 } from "./constants";
 
-export const fetchAllUsers: any = () => ({
+export const fetchAllUsers: any = (data: any) => ({
   type: ALL_USERS_REQUEST,
+  payload: data,
 });
 
 export const fetchDataSuccess: any = (data: any) => ({

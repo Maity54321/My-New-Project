@@ -2,7 +2,18 @@ import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { MdEditSquare, MdDelete } from "react-icons/md";
-import { Button, Stack, TextField } from "@mui/material";
+import {
+  Button,
+  Paper,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+} from "@mui/material";
 import {
   createUserRequest,
   deleteUserRequest,
@@ -173,13 +184,31 @@ export default function UserTable() {
     handleChange(e);
     setEditUsers(updateModel(data));
   };
-  console.log(data);
+
+  let [pageNumber, setPageNumber] = useState(1);
+
+  const nextPage = () => {
+    setPageNumber(pageNumber + 1);
+  };
+
+  const previousPage = () => {
+    if (pageNumber > 1) {
+      pageNumber = --pageNumber;
+      setPageNumber(pageNumber);
+    }
+  };
+
+  const paginationData = {
+    page: pageNumber,
+    limit: 10,
+  };
+
   useEffect(() => {
-    dispatch(fetchAllUsers());
+    dispatch(fetchAllUsers(paginationData));
     if (data !== undefined && data.length !== 0) {
       setRow(data);
     }
-  }, [data !== undefined, data.length !== 0, status === 200]);
+  }, [data !== undefined, data.length !== 0, status == 200, pageNumber]);
 
   const style = {
     position: "absolute" as "absolute",
@@ -197,20 +226,49 @@ export default function UserTable() {
   return (
     <>
       <Box sx={{ height: "100%", width: "100%" }}>
-        <DataGrid
-          rows={row}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: rowsPerPage,
-              },
-            },
-          }}
-          pageSizeOptions={[5, 10, 15]}
-          // checkboxSelection
-          disableRowSelectionOnClick
-        />
+        <TableContainer component={Paper} sx={{ height: 530 }}>
+          <Table sx={{ minWidth: 650 }}>
+            <TableHead>
+              <TableRow sx={{ textAlign: "center" }}>
+                <TableCell>Id</TableCell>
+                <TableCell>UserName</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Phone</TableCell>
+                <TableCell colSpan={2}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {row.map((item: any) => (
+                <TableRow key={item.id}>
+                  <TableCell>{item.id}</TableCell>
+                  <TableCell>{item.firstName + item.lastName}</TableCell>
+                  <TableCell>{item.email}</TableCell>
+                  <TableCell>{item.phone}</TableCell>
+                  <TableCell>
+                    {
+                      <MdEditSquare
+                        color="blue"
+                        fontSize={20}
+                        className="cursor-pointer"
+                        onClick={(e) => handleEdit(item.id, e)}
+                      />
+                    }
+                  </TableCell>
+                  <TableCell>
+                    {
+                      <MdDelete
+                        color="red"
+                        fontSize={20}
+                        className="cursor-pointer"
+                        onClick={() => handleDelete(item.id)}
+                      />
+                    }
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Box>
       {/* Modal Section */}
       <Modal
@@ -277,6 +335,17 @@ export default function UserTable() {
         </Box>
       </Modal>
       <Box>
+        <Button
+          variant="contained"
+          onClick={previousPage}
+          sx={{ marginTop: 2 }}
+        >
+          Prev
+        </Button>
+        <Button variant="contained" onClick={nextPage} sx={{ marginTop: 2 }}>
+          Next
+        </Button>
+
         <Button
           variant="contained"
           sx={{
